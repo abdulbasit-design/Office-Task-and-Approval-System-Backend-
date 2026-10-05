@@ -5,7 +5,7 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 from app.config.database import get_db
-from app.dependencies.auth import require_role
+from app.dependencies.auth import get_current_user, require_role
 from app.models.user_model import User
 from app.schemas.user_schema import (
     UserAdminUpdate,
@@ -32,7 +32,7 @@ router = APIRouter(
 def get_all(
     db: Session = Depends(get_db),
     current_user: User = Depends(
-        require_role("admin")
+        get_current_user
     )
 ):
     return get_users_controller(db)
@@ -46,7 +46,7 @@ def get_one(
     user_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(
-        require_role("admin")
+        get_current_user
     )
 ):
     return get_user_controller(

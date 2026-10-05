@@ -2,6 +2,7 @@ from sqlalchemy import Column, BigInteger, String, Text, Boolean, DateTime, Fore
 from sqlalchemy.sql import func
 
 from app.config.database import Base
+from app.models.task_model import Task
 
 
 class Notification(Base):

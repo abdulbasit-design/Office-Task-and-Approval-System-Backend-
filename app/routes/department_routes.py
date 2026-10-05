@@ -6,7 +6,7 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 from app.config.database import get_db
-from app.dependencies.auth import require_role
+from app.dependencies.auth import get_current_user, require_role
 from app.models.user_model import User
 from app.schemas.department_schema import (
     DepartmentCreate,
@@ -52,7 +52,7 @@ def create(
 def get_all(
     db: Session = Depends(get_db),
     current_user: User = Depends(
-        require_role("admin")
+        get_current_user
     )
 ):
     return get_departments_controller(db)
@@ -66,7 +66,7 @@ def get_one(
     department_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(
-        require_role("admin")
+        get_current_user
     )
 ):
     return get_department_controller(

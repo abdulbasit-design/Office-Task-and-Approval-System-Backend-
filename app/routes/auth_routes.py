@@ -16,7 +16,11 @@ from app.models.user_model import User
 from app.schemas.user_schema import (
     UserCreate,
     UserLogin,
-    UserResponse
+    UserResponse,
+    ForgotPasswordRequest,
+    MessageResponse,
+    PasswordResetRequestItem,
+    AdminResetPasswordRequest
 )
 from app.controllers.auth_controller import (
     signup_controller,
@@ -26,8 +30,12 @@ from app.controllers.auth_controller import (
     get_my_profile_controller,
     employee_test_controller,
     manager_test_controller,
-    admin_test_controller
+    admin_test_controller,
+    forgot_password_controller,
+    get_password_reset_requests_controller,
+    admin_reset_password_controller
 )
+
 
 
 router = APIRouter(
@@ -127,3 +135,52 @@ def admin_test(
     return admin_test_controller(
         current_user
     )
+
+
+@router.post(
+    "/forgot-password",
+    response_model=MessageResponse
+)
+def forgot_password(
+    request_data: ForgotPasswordRequest,
+    db: Session = Depends(get_db)
+):
+    return forgot_password_controller(
+        request_data,
+        db
+    )
+
+
+@router.get(
+    "/password-reset-requests",
+    response_model=list[PasswordResetRequestItem]
+)
+def get_password_reset_requests(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(
+        require_role("admin")
+    )
+):
+    return get_password_reset_requests_controller(
+        db
+    )
+
+
+@router.post(
+    "/password-reset-requests/{request_id}/reset",
+    response_model=MessageResponse
+)
+def admin_reset_password(
+    request_id: int,
+    reset_data: AdminResetPasswordRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(
+        require_role("admin")
+    )
+):
+    return admin_reset_password_controller(
+        request_id,
+        reset_data,
+        db
+    )
+

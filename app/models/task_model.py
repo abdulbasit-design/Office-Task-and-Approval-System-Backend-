@@ -1,9 +1,11 @@
 from sqlalchemy import Column, BigInteger, String, Text, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.config.database import Base
+from app.models.user_model import User
 
 
 class Task(Base):
@@ -90,3 +92,25 @@ class Task(Base):
         nullable=False,
         server_default=func.now()
     )
+
+    creator = relationship("User", foreign_keys=[created_by], lazy="joined")
+    assignee = relationship("User", foreign_keys=[assigned_to], lazy="joined")
+    approver = relationship("User", foreign_keys=[approved_by], lazy="joined")
+
+    @property
+    def assigned_to_name(self) -> str | None:
+        return self.assignee.full_name if self.assignee else None
+
+    @property
+    def created_by_name(self) -> str | None:
+        return self.creator.full_name if self.creator else None
+
+    @property
+    def approved_by_name(self) -> str | None:
+        return self.approver.full_name if self.approver else None
+
+    @property
+    def department_name(self) -> str | None:
+        if self.assignee and self.assignee.department:
+            return self.assignee.department.name
+        return None

@@ -39,7 +39,8 @@ def create_task(
         activity_log=[
             {
                 "action": "created",
-                "user_id": current_user.id
+                "user_id": current_user.id,
+                "user_name": current_user.full_name
             }
         ]
     )
@@ -130,7 +131,8 @@ def update_task(
     task.activity_log.append(
         {
             "action": "updated",
-            "user_id": current_user.id
+            "user_id": current_user.id,
+            "user_name": current_user.full_name
         }
     )
 
@@ -162,7 +164,8 @@ def submit_task(
     task.activity_log.append(
         {
             "action": "submitted",
-            "user_id": current_user.id
+            "user_id": current_user.id,
+            "user_name": current_user.full_name
         }
     )
 
@@ -211,7 +214,8 @@ def approve_task(
     task.activity_log.append(
         {
             "action": "approved",
-            "user_id": current_user.id
+            "user_id": current_user.id,
+            "user_name": current_user.full_name
         }
     )
 
@@ -247,7 +251,8 @@ def reject_task(
     task.activity_log.append(
         {
             "action": "rejected",
-            "user_id": current_user.id
+            "user_id": current_user.id,
+            "user_name": current_user.full_name
         }
     )
 

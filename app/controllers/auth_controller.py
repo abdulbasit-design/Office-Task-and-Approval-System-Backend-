@@ -3,9 +3,21 @@ from sqlalchemy.orm import Session
 import jwt
 
 from app.models.user_model import User
-from app.schemas.user_schema import UserCreate, UserLogin
-from app.services.auth_service import signup_user, login_user
+from app.schemas.user_schema import (
+    UserCreate,
+    UserLogin,
+    ForgotPasswordRequest,
+    AdminResetPasswordRequest
+)
+from app.services.auth_service import (
+    signup_user,
+    login_user,
+    forgot_password_service,
+    get_pending_password_reset_requests_service,
+    admin_reset_user_password_service
+)
 from app.utils.jwt import decode_access_token, create_access_token
+
 
 
 def signup_controller(
@@ -149,3 +161,48 @@ def admin_test_controller(
         "user": current_user.full_name,
         "role": current_user.role
     }
+
+
+def forgot_password_controller(
+    request_data: ForgotPasswordRequest,
+    db: Session
+):
+    return forgot_password_service(
+        db,
+        request_data.email
+    )
+
+
+def get_password_reset_requests_controller(
+    db: Session
+):
+    return get_pending_password_reset_requests_service(
+        db
+    )
+
+
+def admin_reset_password_controller(
+    request_id: int,
+    reset_data: AdminResetPasswordRequest,
+    db: Session
+):
+    result = admin_reset_user_password_service(
+        db,
+        request_id,
+        reset_data.new_password
+    )
+
+    if result == "not_found":
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Password reset request not found"
+        )
+
+    if result == "not_pending":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password reset request is not pending or has already been completed"
+        )
+
+    return result
+

@@ -35,6 +35,7 @@ class UserResponse(BaseModel):
     manager_id: int | None
     is_active: bool
     joined_at: datetime
+    department_name: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -58,3 +59,31 @@ class UserAdminUpdate(BaseModel):
     manager_id: int | None = None
 
     is_active: bool
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class MessageResponse(BaseModel):
+    message: str
+
+
+class PasswordResetRequestItem(BaseModel):
+    id: int
+    user_id: int
+    full_name: str
+    email: EmailStr
+    role: str
+    status: str
+    requested_at: datetime | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AdminResetPasswordRequest(BaseModel):
+    new_password: str = Field(
+        min_length=8,
+        max_length=100
+    )
+

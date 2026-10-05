@@ -68,6 +68,10 @@ class TaskResponse(BaseModel):
     rejection_reason: str | None
     activity_log: list
     created_at: datetime
+    assigned_to_name: str | None = None
+    created_by_name: str | None = None
+    approved_by_name: str | None = None
+    department_name: str | None = None
 
     model_config = {
         "from_attributes": True
